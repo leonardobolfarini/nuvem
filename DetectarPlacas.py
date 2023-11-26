@@ -4,7 +4,6 @@ import pymysql
 # import serial
 import time
 import numpy as np
-import logging
 from datetime import datetime
 
 # arduino = serial.Serial("COM6", 9600)
@@ -21,7 +20,6 @@ class Database:
     def __init__(self):
         self._host = None
         self._user = None
-        self._port = None
         self._password = None
         self._database = None   
     
@@ -31,7 +29,6 @@ class Database:
             connection = pymysql.connect(
                 host=cls._host,
                 user=cls._user,
-                port=cls._port,
                 password=cls._password,
                 database=cls._database
             )
@@ -74,12 +71,12 @@ class Imagem:
                         # pinta um retangulo com essas coordenadas em cima da imagem passada, os dois ultimos parâmetros são a cor RGB e a grossura da linha
                         cv2.rectangle(image_resized, (x, y), (x + height, y + width), (90, 255, 35), 3)
                         roi = image_resized[y:y + width, x:x +height]
-                        cv2.imwrite('D:/Projeto_placas/roi.png', roi)
+                        cv2.imwrite('roi.png', roi)
     
     def _preProcessamentoRoi(self):
         max_width = 800
         max_height = 400    
-        roi = cv2.imread('D:/Projeto_placas/roi.png')
+        roi = cv2.imread('roi.png')
         if roi is None:
             return 
         
@@ -92,10 +89,10 @@ class Imagem:
         gray_roi = cv2.cvtColor(roi_risezed, cv2.COLOR_BGR2GRAY)   
         n, binary_roi = cv2.threshold(gray_roi, 70, 255, cv2.THRESH_BINARY)
         blur_roi = cv2.GaussianBlur(binary_roi, (5, 5), 0)
-        cv2.imwrite('D:/Projeto_placas/roi.png', blur_roi)
+        cv2.imwrite('roi.png', blur_roi)
 
     def _ocrImagePlate(self):
-        roi = cv2.imread('D:/Projeto_placas/roi.png')
+        roi = cv2.imread('roi.png')
         if roi is not None:
             roi_resized = cv2.resize(roi, (800, 400))
             # cv2.imshow('roi', roi_resized)
@@ -118,11 +115,10 @@ def abertura_cancela():
         print(saida)
 
         db = Database
-        db._host = 'roundhouse.proxy.rlwy.net' 
-        db._user = 'root'
-        db._port = 31800
-        db._password = 'Ed5CEEB2aFCbdF3D5c3GDBDgB4C4BedD'
-        db._database = 'cadastros'
+        db._host = '162.240.34.167' 
+        db._user = 'devbr_wp_kqeph'
+        db._password = '#rbwqU77X3Zy5Zz#'
+        db._database = 'devbr_wp_yx08y'
         connection = db._connect()
         cursor = connection.cursor()
         # consulta do banco de dados em SQL
@@ -140,14 +136,15 @@ def abertura_cancela():
             # arduino.write(b'1')
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             log_message = (f'{timestamp} - Cancela aberta - Placa {placa}')
-            cursor.execute(f'insert into logs values("{log_message}")')
+            cursor.execute(f'insert into logs values(default, "{log_message}")')
             connection.commit()
             connection.close()
-            #black_img = np.zeros((400, 800))
-            #cv2.imwrite('D:/Projeto_placas/roi.png', black_img
+            black_img = np.zeros((400, 800))
+            cv2.imwrite('roi.png', black_img)
 
         else:
             # arduino.write(b'1')
             print(saida)
 
-abertura_cancela()
+if __name__ == '__main__':
+    abertura_cancela()
