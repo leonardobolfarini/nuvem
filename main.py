@@ -8,7 +8,7 @@ from datetime import datetime
 
 # arduino = serial.Serial("COM6", 9600)
 
-pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = "tesseract"
 
 class Database:
     _host:str
