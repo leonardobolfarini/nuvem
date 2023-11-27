@@ -130,12 +130,12 @@ def abertura_cancela():
             placa = placa.strip().upper()
 
         if saida == placa:
-            print('foi!!!!!!!!!!!!!')
             # arduino.write(b'0')
             # time.sleep(5)
             # arduino.write(b'1')
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             log_message = (f'{timestamp} - Cancela aberta - Placa {placa}')
+            print(log_message)
             cursor.execute(f'insert into logs values(default, "{log_message}")')
             connection.commit()
             connection.close()
