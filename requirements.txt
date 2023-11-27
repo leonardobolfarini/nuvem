@@ -2,5 +2,4 @@ opencv-python
 pytesseract
 pymysql
 pyserial
-numpy
 opengl
