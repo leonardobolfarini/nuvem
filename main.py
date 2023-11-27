@@ -138,9 +138,7 @@ def abertura_cancela():
             cursor.execute(f'insert into logs values(default, "{log_message}")')
             connection.commit()
             connection.close()
-            black_img = np.zeros((400, 800))
-            cv2.imwrite('roi.png', black_img)
-
+            
         else:
             # arduino.write(b'1')
             print(saida)
