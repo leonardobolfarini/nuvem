@@ -1,5 +1,3 @@
-opencv-python-headless
-opencv-python
 pytesseract
 pymysql
 pyserial
