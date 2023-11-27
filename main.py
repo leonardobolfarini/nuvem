@@ -7,7 +7,7 @@ from datetime import datetime
 
 # arduino = serial.Serial("COM6", 9600)
 
-pytesseract.pytesseract.tesseract_cmd = "tesseract"
+pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
 
 class Database:
     _host:str
@@ -41,7 +41,7 @@ class Imagem:
     # parâmetro passado se refere a qual webcam será capturada a imagem
         cap = cv2.VideoCapture(0)
         _, frame = cap.read()
-        cv2.waitKey(2000)
+        time.sleep(2)
         return frame
     
     def _contorno_imagem(self, frame):
