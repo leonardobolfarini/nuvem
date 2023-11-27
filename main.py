@@ -3,7 +3,6 @@ import pytesseract
 import pymysql
 # import serial
 import time
-import numpy as np
 from datetime import datetime
 
 # arduino = serial.Serial("COM6", 9600)
