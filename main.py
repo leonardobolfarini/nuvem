@@ -7,7 +7,7 @@ from datetime import datetime
 
 # arduino = serial.Serial("COM6", 9600)
 
-pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = 'tesseract'
 
 class Database:
     _host:str
@@ -36,10 +36,11 @@ class Database:
             print('Não foi possivel estabelecer a conexão com o banco de dados')
     
 class Imagem:
+    camera_ip = 'http://10.1.15.241:8888/update.html'
     # Captura o frame da webcam
     def _ImageCapture(self):   
     # parâmetro passado se refere a qual webcam será capturada a imagem
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(camera_ip)
         _, frame = cap.read()
         time.sleep(2)
         return frame
