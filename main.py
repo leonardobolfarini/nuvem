@@ -36,9 +36,9 @@ class Database:
             print('Não foi possivel estabelecer a conexão com o banco de dados')
     
 class Imagem:
-    camera_ip = "http://10.1.15.241:8888/out.jpg"
     # Captura o frame da webcam
-    def _ImageCapture(self):   
+    def _ImageCapture(self):
+        camera_ip = "http://10.1.15.241:8888/out.jpg"
     # parâmetro passado se refere a qual webcam será capturada a imagem
         cap = cv2.VideoCapture(camera_ip)
         _, frame = cap.read()
