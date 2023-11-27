@@ -3,3 +3,4 @@ pytesseract
 pymysql
 pyserial
 numpy
+opengl
