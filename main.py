@@ -38,7 +38,7 @@ class Database:
 class Imagem:
     # Captura o frame da webcam
     def _ImageCapture(self):
-        camera_ip = "https://youtube.com/live/Z8_Sd_A0UPM?feature=share"
+        camera_ip = "https://youtu.be/M7zhyFvCKuI"
     # parâmetro passado se refere a qual webcam será capturada a imagem
         cap = cv2.VideoCapture(camera_ip)
         _, frame = cap.read()
