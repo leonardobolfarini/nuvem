@@ -39,14 +39,17 @@ class Database:
 class Imagem:
     # Captura o frame da webcam
     def _ImageCapture(self):
-        url = "https://www.twitch.tv/slynzsacudo"
-        streams = streamlink.streams(url)
-        url = streams["best"].url
-    # parâmetro passado se refere a qual webcam será capturada a imagem
-        cap = cv2.VideoCapture(url)
-        _, frame = cap.read()
-        time.sleep(2)
-        return frame
+        try:
+            url = "https://www.twitch.tv/slynzsacudo"
+            streams = streamlink.streams(url)
+            url = streams["best"].url
+        # parâmetro passado se refere a qual webcam será capturada a imagem
+            cap = cv2.VideoCapture(url)
+            _, frame = cap.read()
+            time.sleep(2)
+            return frame
+        except:
+            return None
     
     def _contorno_imagem(self, frame):
         if frame is not None:
@@ -109,42 +112,45 @@ class Imagem:
 def abertura_cancela():
     imagem = Imagem()
     frame = imagem._ImageCapture()
-    while frame is not None:
-        frame = imagem._ImageCapture()
-        roi = imagem._contorno_imagem(frame)
-        img_preprocessada = imagem._preProcessamentoRoi(roi)
-        saida = imagem._ocrImagePlate(img_preprocessada)
-        print(saida)
-
-        db = Database
-        db._host = '162.240.34.167' 
-        db._user = 'devbr_wp_kqeph'
-        db._password = '#rbwqU77X3Zy5Zz#'
-        db._database = 'devbr_wp_yx08y'
-        connection = db._connect()
-        cursor = connection.cursor()
-        # consulta do banco de dados em SQL
-        cursor.execute(f"select placa_automovel from pessoas where placa_automovel = '{saida}';")
-        placa = cursor.fetchall()
-
-        if len(placa) > 0:
-            placa = placa[0][0]
-            placa = placa.strip().upper()
-
-        if saida == placa:
-            print('foi!!!!!!!!!!!!!')
-            # arduino.write(b'0')
-            # time.sleep(5)
-            # arduino.write(b'1')
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            log_message = (f'{timestamp} - Cancela aberta - Placa {placa}')
-            cursor.execute(f'insert into logs values(default, "{log_message}")')
-            connection.commit()
-            connection.close()
-            
-        else:
-            # arduino.write(b'1')
+    if frame is None:
+        pass
+    else:
+        while frame is not None:
+            frame = imagem._ImageCapture()
+            roi = imagem._contorno_imagem(frame)
+            img_preprocessada = imagem._preProcessamentoRoi(roi)
+            saida = imagem._ocrImagePlate(img_preprocessada)
             print(saida)
+
+            db = Database
+            db._host = '162.240.34.167' 
+            db._user = 'devbr_wp_kqeph'
+            db._password = '#rbwqU77X3Zy5Zz#'
+            db._database = 'devbr_wp_yx08y'
+            connection = db._connect()
+            cursor = connection.cursor()
+            # consulta do banco de dados em SQL
+            cursor.execute(f"select placa_automovel from pessoas where placa_automovel = '{saida}';")
+            placa = cursor.fetchall()
+
+            if len(placa) > 0:
+                placa = placa[0][0]
+                placa = placa.strip().upper()
+
+            if saida == placa:
+                print('foi!!!!!!!!!!!!!')
+                # arduino.write(b'0')
+                # time.sleep(5)
+                # arduino.write(b'1')
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                log_message = (f'{timestamp} - Cancela aberta - Placa {placa}')
+                cursor.execute(f'insert into logs values(default, "{log_message}")')
+                connection.commit()
+                connection.close()
+            
+            else:
+                # arduino.write(b'1')
+                print(saida)
 
 if __name__ == '__main__':
     abertura_cancela()
