@@ -1,6 +1,7 @@
 import cv2
 import streamlink
 import pytesseract
+import shutil
 import pymysql
 # import serial
 import time
@@ -8,7 +9,7 @@ from datetime import datetime
 
 # arduino = serial.Serial("COM6", 9600)
 
-pytesseract.pytesseract.tesseract_cmd = 'tesseract'
+pytesseract.pytesseract.tesseract_cmd = '/app/.apt/usr/bin/tesseract'
 
 class Database:
     _host:str
