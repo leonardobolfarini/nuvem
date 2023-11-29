@@ -1,4 +1,5 @@
 import cv2
+import streamlink
 import pytesseract
 import pymysql
 # import serial
@@ -38,9 +39,11 @@ class Database:
 class Imagem:
     # Captura o frame da webcam
     def _ImageCapture(self):
-        camera_ip = "https://youtu.be/M7zhyFvCKuI"
+        url = "https://www.twitch.tv/slynzsacudo"
+        streams = streamlink.streams(url)
+        url = streams["best"].url
     # parâmetro passado se refere a qual webcam será capturada a imagem
-        cap = cv2.VideoCapture(camera_ip)
+        cap = cv2.VideoCapture(url)
         _, frame = cap.read()
         time.sleep(2)
         return frame
