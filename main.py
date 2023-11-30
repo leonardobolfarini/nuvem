@@ -8,7 +8,6 @@ from datetime import datetime
 
 # arduino = serial.Serial("COM6", 9600)
 
-pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
 class Database:
     _host:str
     _user:str
@@ -39,7 +38,8 @@ class Imagem:
     # Captura o frame da webcam
     def _ImageCapture(self):
         try:
-            url = "https://www.twitch.tv/alanzoka"
+            print('rodou')
+            url = "https://www.twitch.tv/gaules"
             streams = streamlink.streams(url)
             url = streams["best"].url
         # parâmetro passado se refere a qual webcam será capturada a imagem
@@ -103,9 +103,14 @@ class Imagem:
             # configuração de caracteres que o pytessetact irá analisar
             config = r'-c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 --psm 6'
             # imagem a ser analisada as letras,a linguagem e a configuração passada acima
-            saida = pytesseract.image_to_string(roi_resized, lang='eng', config=config)
-            saida = saida.strip().upper()
+            try:
+                saida = pytesseract.image_to_string(roi_resized, lang='eng', config=config)
+            except pytesseract.pytesseract.TesseractNotFoundError:
+                print("Tesseract não encontrado. Certifique-se de que o Tesseract está instalado no ambiente.")
+                return saida
 
+            saida = saida.strip().upper()
+            
         return saida
 
 def abertura_cancela():
