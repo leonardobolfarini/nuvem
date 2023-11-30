@@ -1,7 +1,6 @@
 import cv2
 import streamlink
 import pytesseract
-import shutil
 import pymysql
 # import serial
 import time
@@ -9,7 +8,7 @@ from datetime import datetime
 
 # arduino = serial.Serial("COM6", 9600)
 
-pytesseract.pytesseract.tesseract_cmd = '/app/.apt/usr/bin/tesseract'
+pytesseract.pytesseract.tesseract_cmd = r'/app/.apt/usr/bin/tesseract'
 
 class Database:
     _host:str
@@ -41,7 +40,9 @@ class Imagem:
     # Captura o frame da webcam
     def _ImageCapture(self):
         try:
-            url = ''
+            url = "https://www.twitch.tv/alanzoka"
+            streams = streamlink.streams(url)
+            url = streams["best"].url
         # parâmetro passado se refere a qual webcam será capturada a imagem
             cap = cv2.VideoCapture(url)
             _, frame = cap.read()
