@@ -1,5 +1,7 @@
 FROM ubuntu:20.04
 
+RUN ln -snf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime && echo "America/Sao_Paulo" > /etc/timezone
+
 RUN apt-get update && \
     apt-get install -y python3 python3-pip &&\
     apt-get install -y --no-install-recommends libleptonica-dev && \
