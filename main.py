@@ -4,9 +4,14 @@ import pytesseract
 import pymysql
 # import serial
 import time
+import sys
 from datetime import datetime
 
 # arduino = serial.Serial("COM6", 9600)
+log_cloud = 'deploy.log'
+with open(log_cloud, 'w') as log:
+    sys.stdout = log
+    print('Iniciando deploy...')
 
 class Database:
     _host:str
@@ -32,13 +37,14 @@ class Database:
             )
             return connection
         except:
-            print('Não foi possivel estabelecer a conexão com o banco de dados')
+            with open(log_cloud, 'w') as log:
+                sys.stdout = log
+                print('Não foi possivel estabelecer a conexão com o banco de dados')
     
 class Imagem:
     # Captura o frame da webcam
     def _ImageCapture(self):
         try:
-            print('rodou')
             url = "https://www.twitch.tv/callmedigo"
             streams = streamlink.streams(url)
             url = streams["best"].url
@@ -106,7 +112,9 @@ class Imagem:
             try:
                 saida = pytesseract.image_to_string(roi_resized, lang='eng', config=config)
             except pytesseract.pytesseract.TesseractNotFoundError:
-                print("Tesseract não encontrado. Certifique-se de que o Tesseract está instalado no ambiente.")
+                with open(log_cloud, 'w') as log:
+                    sys.stdout = log
+                    print("Tesseract não encontrado. Certifique-se de que o Tesseract está instalado no ambiente.")
                 return saida
 
             saida = saida.strip().upper()
@@ -114,6 +122,10 @@ class Imagem:
         return saida
 
 def abertura_cancela():
+    # Seção de código para o deploy
+    with open(log_cloud, 'w') as log:
+        sys.stdout = log
+        print('concluido')
     imagem = Imagem()
     frame = imagem._ImageCapture()
     if frame is None:
@@ -124,7 +136,9 @@ def abertura_cancela():
             roi = imagem._contorno_imagem(frame)
             img_preprocessada = imagem._preProcessamentoRoi(roi)
             saida = imagem._ocrImagePlate(img_preprocessada)
-            print(saida)
+            with open(log_cloud, 'w') as log:
+                sys.stdout = log
+                print(saida)
 
             db = Database
             db._host = '162.240.34.167' 
@@ -142,7 +156,9 @@ def abertura_cancela():
                 placa = placa.strip().upper()
 
             if saida == placa:
-                print('foi!!!!!!!!!!!!!')
+                with open(log_cloud, 'w') as log:
+                    sys.stdout = log
+                    print('foi!!!!!!!!!!!!!')
                 # arduino.write(b'0')
                 # time.sleep(5)
                 # arduino.write(b'1')
@@ -154,7 +170,9 @@ def abertura_cancela():
             
             else:
                 # arduino.write(b'1')
-                print(saida)
+                with open(log_cloud, 'w') as log:
+                    sys.stdout = log
+                    print(saida)
 
 if __name__ == '__main__':
     abertura_cancela()
