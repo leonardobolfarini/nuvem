@@ -2,17 +2,19 @@ import cv2
 import streamlink
 import pytesseract
 import pymysql
-# import serial
+# import serial, comentado pois não está sendo utilizado na nuvem
 import time
 import sys
 from datetime import datetime
 
-# arduino = serial.Serial("COM6", 9600)
+# arduino = serial.Serial("COM6", 9600), comentado pois n funciona em nuvem
+# dar retorno pro deploy da nuvem
 log_cloud = 'deploy.log'
 with open(log_cloud, 'w') as log:
     sys.stdout = log
     print('Iniciando deploy...')
 
+# classe que faz conexão com banco de dados
 class Database:
     _host:str
     _user:str
@@ -25,7 +27,8 @@ class Database:
         self._user = None
         self._password = None
         self._database = None   
-    
+
+    # método de classe para gerar conexão com o banco de dados
     @classmethod
     def _connect(cls):
         try:
@@ -36,15 +39,17 @@ class Database:
                 database=cls._database
             )
             return connection
-        except:
+        except: # gera log de deploy
             with open(log_cloud, 'w') as log:
                 sys.stdout = log
                 print('Não foi possivel estabelecer a conexão com o banco de dados')
-    
+
+# classe que faz manipulação de imagens
 class Imagem:
     # Captura o frame da webcam
     def _ImageCapture(self):
         try:
+            # url utilizada para capturar frame
             url = "https://www.twitch.tv/callmedigo"
             streams = streamlink.streams(url)
             url = streams["best"].url
@@ -55,7 +60,8 @@ class Imagem:
             return frame
         except:
             return None
-    
+            
+    # método que acha os contornos no frame 
     def _contorno_imagem(self, frame):
         if frame is not None:
             # parâmetros são o frame passado para o método e o tamanho a ser redimensionalizado
@@ -84,6 +90,7 @@ class Imagem:
                         roi = image_resized[y:y + width, x:x +height]
                         return roi
     
+    # método que faz processos para facilitar para o tesseract achar a string
     def _preProcessamentoRoi(self, roi):
         max_width = 800
         max_height = 400    
@@ -101,6 +108,7 @@ class Imagem:
         blur_roi = cv2.GaussianBlur(binary_roi, (5, 5), 0)
         return blur_roi
 
+    # função para o tesseract achar a string
     def _ocrImagePlate(self, roi):
         saida = ''
         if roi is not None:
@@ -117,15 +125,16 @@ class Imagem:
                     print("Tesseract não encontrado. Certifique-se de que o Tesseract está instalado no ambiente.")
                 return saida
 
-            saida = saida.strip().upper()
-            
+            saida = saida.strip().upper()   
         return saida
 
+# função que abre a canela e faz outras coisas relacionadas a sua abertura
 def abertura_cancela():
     # Seção de código para o deploy
     with open(log_cloud, 'w') as log:
         sys.stdout = log
         print('concluido')
+    # instância a classe imagem para a procura da placa
     imagem = Imagem()
     frame = imagem._ImageCapture()
     if frame is None:
@@ -140,11 +149,13 @@ def abertura_cancela():
                 sys.stdout = log
                 print(saida)
 
+            # instância classe database com os valores do banco a utilizar
             db = Database
             db._host = '162.240.34.167' 
             db._user = 'devbr_wp_kqeph'
             db._password = '#rbwqU77X3Zy5Zz#'
             db._database = 'devbr_wp_yx08y'
+            # conecta a ele e gera um cursor para manipulação
             connection = db._connect()
             cursor = connection.cursor()
             # consulta do banco de dados em SQL
@@ -160,11 +171,15 @@ def abertura_cancela():
                     sys.stdout = log
                     print('foi!!!!!!!!!!!!!')
                 # arduino.write(b'0')
-                # time.sleep(5)
+                time.sleep(5)         # os 2 comentados  pois só funcionam localmente
                 # arduino.write(b'1')
+                # armazena a data e dia
                 timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                # gera um log
                 log_message = (f'{timestamp} - Cancela aberta - Placa {placa}')
+                # executa um código pro banco adicionar esse log na tabela logs
                 cursor.execute(f'insert into logs values(default, "{log_message}")')
+                # comete a ação e fecha a conexão
                 connection.commit()
                 connection.close()
             
@@ -175,4 +190,5 @@ def abertura_cancela():
                     print(saida)
 
 if __name__ == '__main__':
+    # chama a função que executa tudo
     abertura_cancela()
