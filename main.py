@@ -39,7 +39,7 @@ class Database:
                 sys.stdout = log
                 print('Não foi possivel estabelecer a conexão com o banco de dados')
 
-class Imagem:
+class Image:
     def _ImageCapture(self):
         try:
             url = "https://www.twitch.tv/callmedigo"
